@@ -5,6 +5,15 @@ REM コマンドの出力を変数に格納し、現在の状態を表示
 FOR /F "tokens=* USEBACKQ" %%F IN (`Powershell -Command "(Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform).State"`) DO (
     SET state=%%F
 )
+
+REM 状態が0または1以外の場合、管理者権限での実行を促す
+IF NOT "!state!"=="Disabled" (
+    IF NOT "!state!"=="Enabled" (
+        echo 管理者権限で実行してください。
+        GOTO END
+    )
+)
+
 echo VirtualMachinePlatformの状態: !state!
 
 REM ユーザー入力のプロンプト
@@ -23,5 +32,6 @@ IF "!action!"=="1" (
 ) ELSE (
     echo 何も処理は行われませんでした。
 )
+:END
 ENDLOCAL
 pause
